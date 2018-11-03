@@ -2,6 +2,7 @@ const rp = require('request-promise');
 const $ = require('cheerio');
 const stringify = require('csv-stringify');
 const fs = require('fs');
+const nconf = require('nconf');
 
 const columns = {
     id: 'Member ID',
@@ -34,19 +35,24 @@ const columns = {
 var result = [];
 var failed = 0;
 
-process();
+nconf.argv().env();
+var startguideid = nconf.get('start');
+var endguideid = nconf.get('end');
+var filename = nconf.get('filename');
 
+process(startguideid, endguideid, filename);
 
-async function process() {
-    let startguideid = 259;
-    let endguideid = 8739;
+async function process(startguideid, endguideid, filename) {
+    nconf.argv().env();
+    // let startguideid = 259;
+    // let endguideid = 8739;
     
     for (let i = startguideid; i < endguideid; i++) {
         let url = 'http://hr.tourguide.org.tw/detail.aspx?id=' + i;
         console.log(url);
         await getdetail(url);
     }
-    writecsv(result);
+    writecsv(result, filename);
 }
 
 async function getdetail(url) {
@@ -91,12 +97,12 @@ async function getdetail(url) {
     console.log('Failed count: ' + failed);
 }
 
-function writecsv(data) {
+function writecsv(data, filename) {
     stringify(data, { header: true, columns: columns }, (err, output) => {
         if (err) throw err;
-        fs.writeFile('result.csv', output, (err) => {
+        fs.writeFile(filename, output, (err) => {
             if (err) throw err;
-            console.log('my.csv saved.');
+            console.log(filename + ' saved.');
         });
     });
 }
