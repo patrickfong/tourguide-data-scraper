@@ -47,7 +47,7 @@ async function process(startguideid, endguideid, filename) {
     // let startguideid = 259;
     // let endguideid = 8739;
     
-    for (let i = startguideid; i < endguideid; i++) {
+    for (let i = startguideid; i <= endguideid; i++) {
         let url = 'http://hr.tourguide.org.tw/detail.aspx?id=' + i;
         console.log(url);
         await getdetail(url);
